@@ -1,0 +1,25 @@
+{
+  "name": "bienes_raices",
+  "version": "1.0.0",
+  "description": "",
+  "main": "node index.js",
+  "type": "module",
+  "server": "nodemon index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js"
+  },
+  "keywords": [
+    "MVC",
+    "Pug",
+    "Tailwind",
+    "MySQL",
+    "Sequelize"
+  ],
+  "author": "Israel Castañeda luna",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "pug": "^3.0.2"
+  }
+}
