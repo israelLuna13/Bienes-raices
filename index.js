@@ -5,9 +5,11 @@ const app = express()
 //habilitar pug
 app.set('view engine','pug')
 app.set('views','./views')
+
+//Carpeta publica
+app.use(express.static('public'));
 //routing
-app.get('/login',usuarioRoutes)
-app.get('/registro',usuarioRoutes)
+app.use('/auth',usuarioRoutes)
 
 
 //definir un puerto y arrancar el proyecto 
