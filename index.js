@@ -4,9 +4,14 @@ import db from './config/dba.js'
 //crear la app
 const app = express() 
 
+//habilitar lectura de datos en formularios
+// Configura body-parser
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 //conexion a la base de datps 
 try{
 await db.authenticate();
+db.sync()
 console.log('Conexion Correcta a la base de datos')
 }catch(error){
     console.log(error)

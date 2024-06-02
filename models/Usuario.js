@@ -1,6 +1,6 @@
 import {DataTypes} from 'sequelize'
 import db from '../config/dba.js'
-const Usuario = bd.define('usuarios',{
+const Usuario = db.define('usuarios',{
     nombre:{
         type:DataTypes.STRING,
         allowNull:false,
