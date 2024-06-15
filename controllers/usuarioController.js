@@ -1,5 +1,6 @@
 import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
+import {generarId} from '../helpers/tokens.js'
 
 const formularioLogin = (req, res) => {
   //va a renderizar lo que este en la carpeta auth
@@ -77,8 +78,14 @@ await Usuario.create({
     nombre,
     email,
     password,
-    token:123
+    token:generarId()
 })
+
+res.render('template/mensaje',{
+    pagina:'Cuenta Creada Correctamente',
+    mensaje:'Hemos Enviado un Email de confirmacion, presiona en el enlace'
+})
+
 };
 export {
   formularioLogin,
