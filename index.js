@@ -1,11 +1,13 @@
 import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import db from './config/dba.js'
+
 //crear la app
 const app = express() 
 
 //habilitar lectura de datos en formularios
 // Configura body-parser
+//middleware para procesar los datos de las solicitudes http
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //conexion a la base de datps 
@@ -25,7 +27,6 @@ app.set('views','./views')
 app.use(express.static('public'));
 //routing
 app.use('/auth',usuarioRoutes)
-
 
 //definir un puerto y arrancar el proyecto 
 const port = 3000
