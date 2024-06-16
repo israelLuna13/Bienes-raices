@@ -109,8 +109,24 @@ const confirmar = async(req,res) =>{
         error:true
       })
     }
-    //confirmar la cuenta
+
+     //confirmar la cuenta
+
+    //SI EL USUARIO SI ESTA EN LA BASE DE DATOS
     
+    //modificamos el objeto usuario que obtuvimos 
+
+    usuario.token = null // el token es de un solo uso
+    usuario.confirmado = true //esto indica que el usuario confirmo su cuenta
+    
+    await usuario.save();
+
+    res.render('auth/confirmar-cuenta',{
+      pagina:'Cuenta confirmada',
+      mensaje:'La cuenta se confirmo correctamente',
+    })
+
+
 }
 export {
   formularioLogin,
