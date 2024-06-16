@@ -1,4 +1,6 @@
 import express from 'express'
+import  csurf from 'csurf'
+import cookieParser  from 'cookie-parser'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import db from './config/dba.js'
 
@@ -10,6 +12,12 @@ const app = express()
 //middleware para procesar los datos de las solicitudes http
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+//habilitamos cookieparser
+app.use(cookieParser())
+//habilitar CSRF
+app.use(csurf({cookie:true}))
+
 //conexion a la base de datps 
 try{
 await db.authenticate();

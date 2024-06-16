@@ -10,9 +10,11 @@ const formularioLogin = (req, res) => {
   });
 };
 
+//protejemos la ruta de registro con CSRF
 const formularioRegistro = (req, res) => {
   res.render("auth/registro", {
     pagina: "Crear Cuenta",
+    csrfToken:req.csrfToken()
   });
 };
 
@@ -49,10 +51,12 @@ const registrar = async (req, res) => {
     //errores
     return res.render("auth/registro", {
       pagina: "Crear Cuenta",
+      csrfToken:req.csrfToken(),
       errores: resultado.array(),
       usuario: {
         nombre: req.body.nombre,
         email: req.body.email,
+      
       },
     });
   }
@@ -62,24 +66,25 @@ const registrar = async (req, res) => {
   //verificar que el usuario no este duplicado
   const existeUsuario = await Usuario.findOne({ where: { email } });
 
-  if (existeUsuario) {
-    return res.render("auth/registro", {
-      pagina: "Crear Cuenta",
-      errores: [{ msg: "El usuario ya esta registrado" }],
-      usuario: {
-        nombre: req.body.nombre,
-        email: req.body.email,
-      },
-    });
-  }
+    if (existeUsuario) {
+      return res.render("auth/registro", {
+        pagina: "Crear Cuenta",
+        csrfToken:req.csrfToken(),
+        errores: [{ msg: "El usuario ya esta registrado" }],
+        usuario: {
+          nombre: req.body.nombre,
+          email: req.body.email,
+        },
+      });
+    }
 
-  //almacenar usuario
-  const usuario = await Usuario.create({
-    nombre,
-    email,
-    password,
-    token: generarId(),
-  });
+    //almacenar usuario
+    const usuario = await Usuario.create({
+      nombre,
+      email,
+      password,
+      token: generarId(),
+    });
 
   //enviar email de confirmacion
   emailRegistro({
