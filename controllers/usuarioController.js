@@ -2,6 +2,7 @@ import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
 import { generarId } from "../helpers/tokens.js";
 import { emailRegistro } from "../helpers/emails.js";
+import { where } from "sequelize";
 
 const formularioLogin = (req, res) => {
   //va a renderizar lo que este en la carpeta auth
@@ -21,6 +22,7 @@ const formularioRegistro = (req, res) => {
 const formularioPasswordOlvidado = (req, res) => {
   res.render("auth/recuperar-password", {
     pagina: "Recuperar password",
+    csrfToken:req.csrfToken()
   });
 };
 
@@ -133,11 +135,54 @@ const confirmar = async(req,res) =>{
 
 
 }
+
+
+const resetPassword = async(req,res)=>{
+//validamos los campos del formulario
+
+  await check("email")
+  .isEmail()
+  .withMessage("Escriba un email valido")
+  .run(req);
+
+  //resultado de la validacion de arriba
+  let resultado = validationResult(req);
+
+  //verificamos que el resultado no este vacio
+  if (!resultado.isEmpty()) {
+  //errores
+  return res.render("auth/recuperar-password", {
+    pagina: "Recupera el acceso a tu cuenta",
+    csrfToken:req.csrfToken(),
+    errores:resultado.array()
+  });
+  }
+
+  //buscar el usuario
+
+  const {email} = req.body
+  const usuario = await Usuario.findOne({where:{email}})
+  if(!usuario){
+    res.render("auth/recuperar-password", {
+      pagina: "Recupera el acceso a tu cuenta",
+      csrfToken:req.csrfToken(),
+      errores:[{msg:'El Email no pertenece a ningun usuario'}]
+    });
+  }
+
+  //generar un token valido y enviar el email
+  
+
+}
+
+
+
 export {
   formularioLogin,
   formularioRegistro,
   formularioPasswordOlvidado,
   registrar,
-  confirmar
+  confirmar,
+  resetPassword
 };
 
