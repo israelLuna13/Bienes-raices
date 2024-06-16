@@ -1,6 +1,7 @@
 import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
-import {generarId} from '../helpers/tokens.js'
+import { generarId } from "../helpers/tokens.js";
+import { emailRegistro } from "../helpers/emails.js";
 
 const formularioLogin = (req, res) => {
   //va a renderizar lo que este en la carpeta auth
@@ -14,7 +15,6 @@ const formularioRegistro = (req, res) => {
     pagina: "Crear Cuenta",
   });
 };
-
 
 const formularioPasswordOlvidado = (req, res) => {
   res.render("auth/recuperar-password", {
@@ -74,22 +74,39 @@ const registrar = async (req, res) => {
   }
 
   //almacenar usuario
-await Usuario.create({
+  const usuario = await Usuario.create({
     nombre,
     email,
     password,
-    token:generarId()
-})
+    token: generarId(),
+  });
 
-res.render('template/mensaje',{
-    pagina:'Cuenta Creada Correctamente',
-    mensaje:'Hemos Enviado un Email de confirmacion, presiona en el enlace'
-})
+  //enviar email de confirmacion
+  emailRegistro({
+    nombre: usuario.nombre,
+    email: usuario.email,
+    token: usuario.token,
+  });
 
+  res.render("template/mensaje", {
+    pagina: "Cuenta Creada Correctamente",
+    mensaje: "Hemos Enviado un Email de confirmacion, presiona en el enlace",
+  });
 };
+
+//funcion que comprueba la cuenta
+const confirmar = (req,res) =>{
+    const {token} = req.params
+    console.log(token)
+
+    //verificar si el token es valido
+
+    //confirmar la cuenta
+}
 export {
   formularioLogin,
   formularioRegistro,
   formularioPasswordOlvidado,
   registrar,
+  confirmar
 };
