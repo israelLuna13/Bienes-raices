@@ -7,6 +7,7 @@ const formularioLogin = (req, res) => {
   //va a renderizar lo que este en la carpeta auth
   res.render("auth/login", {
     pagina: "Iniciar Sesion",
+    csrfToken:req.csrfToken()
   });
 };
 
@@ -24,6 +25,57 @@ const formularioPasswordOlvidado = (req, res) => {
     csrfToken:req.csrfToken()
   });
 };
+
+const autenticar = async(req,res) => {
+  //validacion
+  await check("email")
+    .isEmail()
+    .withMessage("El email es oblgatorio")
+    .run(req);
+  await check("password")
+    .notEmpty()
+    .withMessage("El password es obligatorio")
+    .run(req);
+
+     //resultado de la validacion de arriba
+  let resultado = validationResult(req);
+  //verificamos que el resultado no este vacio
+  if (!resultado.isEmpty()) {
+    //errores
+    return res.render("auth/login", {
+      pagina: "Iniciar Sesion",
+      csrfToken:req.csrfToken(),
+      errores: resultado.array(),  
+    });
+  }
+
+  //comprobar si el usuario existe
+  const {email,password} = req.body;
+  const usuario = await Usuario.findOne({where:{email}});
+  if(!usuario){
+        //errores
+        return res.render("auth/login", {
+          pagina: "Iniciar Sesion",
+          csrfToken:req.csrfToken(),
+          errores:[{msg:'El usuario no existe'}]
+         
+        });
+  }
+
+  //comprobar si el usuario esta confirmado 
+  if(!usuario.confirmado){
+    return res.render("auth/login", {
+      pagina: "Iniciar Sesion",
+      csrfToken:req.csrfToken(),
+      errores:[{msg:'El usuario no ha sido confirmado'}]
+     
+    });
+
+  }
+
+  //revisar el password
+
+}
 
 const registrar = async (req, res) => {
   //validamos los campos del formulario
@@ -256,6 +308,7 @@ export {
   confirmar,
   resetPassword,
   comprobarToken,
-  nuevoPassword
+  nuevoPassword,
+  autenticar
 };
 
