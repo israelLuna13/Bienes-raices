@@ -16,7 +16,7 @@
   \************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\nalert('soy el mapa ed')\n\n//# sourceURL=webpack://bienes_raices/./src/js/mapa.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n(function() {\r\n    const lat = 25.54389;\r\n    const lng = -103.41898;\r\n\r\n    // L.map('mapa'): Crea un mapa utilizando la biblioteca Leaflet. Se asume que hay un elemento HTML con el id mapa donde se va a renderizar el mapa.\r\n    // .setView([lat, lng], 16): Establece la vista del mapa en las coordenadas especificadas (lat, lng) con un nivel de zoom de 16.\r\n    const mapa = L.map('mapa').setView([lat, lng ], 16);\r\n    \r\n    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'): Crea una capa de tiles utilizando los mapas de OpenStreetMap. La URL de los tiles contiene {s}, {z}, {x}, y {y}, que son placeholders para el subdominio del servidor, el nivel de zoom, y las coordenadas del tile.\r\n    // { attribution: ... }: Proporciona la atribución requerida por OpenStreetMap, que es un enlace al sitio web y a los derechos de autor.\r\n    // .addTo(mapa): Añade esta capa de tiles al mapa creado anteriormente (mapa).\r\n    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\r\n        attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'\r\n    }).addTo(mapa);\r\n\r\n\r\n})()\n\n//# sourceURL=webpack://bienes_raices/./src/js/mapa.js?");
 
 /***/ })
 
