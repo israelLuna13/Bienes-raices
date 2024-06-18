@@ -73,7 +73,6 @@ const autenticar = async(req,res) => {
   }
 
   //revisar el password
-
   if(!usuario.verificarPassword(password)){
     return res.render("auth/login", {
       pagina: "Iniciar Sesion",
@@ -83,11 +82,14 @@ const autenticar = async(req,res) => {
   }
 
   //autenticar al usuario
+  //generamos un token al usuario que entro al sitio
   const token = generarJWT({id:usuario.id, nombre:usuario.nombre})
-  console.log(token)
-
- 
-
+  
+  //almacenar en un cookie y redireccionamos
+  return res.cookie('_token',token,{
+    httpOnly:true, //evitar ataques,
+    // secure:true
+  }).redirect('/mis-propiedades')
 }
 
 const registrar = async (req, res) => {
