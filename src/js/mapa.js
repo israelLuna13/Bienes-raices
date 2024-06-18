@@ -1,6 +1,10 @@
 (function() {
     const lat = 25.54389;
     const lng = -103.41898;
+    let marker;
+
+    //utilizar provider y geocoder
+    const geocodeService = L.esri.Geocoding.geocodeService()
 
     // L.map('mapa'): Crea un mapa utilizando la biblioteca Leaflet. Se asume que hay un elemento HTML con el id mapa donde se va a renderizar el mapa.
     // .setView([lat, lng], 16): Establece la vista del mapa en las coordenadas especificadas (lat, lng) con un nivel de zoom de 16.
@@ -13,5 +17,30 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mapa);
 
+    // el pin para seleccionar un lugar en especifico del mapa
+    marker = new L.marker([lat,lng],{
+        draggable:true,
+        autoPan:true
+    })
+    .addTo(mapa)
+
+    //detectar el movimiento del pin y obetener las coordenadas
+    marker.on('moveend', function(event ){
+        marker = event.target
+        const posicion = marker.getLatLng();
+        mapa.panTo(new L.LatLng(posicion.lat,posicion.lng))
+
+        //obtener la informacion de las calles 
+        geocodeService.reverse().latlng(posicion,13).run(function(error,resultado){
+            //mostrar un mensaje con el nombre de la calle encima del spin
+            marker.bindPopup(resultado.address.LongLabel).openPopup();    
+            //llenar los campos con la calle , lat y long
+            document.querySelector('.calle').textContent = resultado?.address?.Address ?? '';
+            document.querySelector('#calle').value = resultado?.address?.Address ?? '';
+            document.querySelector('#lat').value = resultado?.latlng?.lat ?? '';
+            document.querySelector('#lng').value = resultado?.latlng?.lng ?? '';
+
+        })
+    })
 
 })()
