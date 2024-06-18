@@ -1,8 +1,9 @@
 import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
-import { generarId } from "../helpers/tokens.js";
+import { generarId,generarJWT } from "../helpers/tokens.js";
 import { emailOlvidePassword, emailRegistro } from "../helpers/emails.js";
 import bcrypt from 'bcrypt'
+
 const formularioLogin = (req, res) => {
   //va a renderizar lo que este en la carpeta auth
   res.render("auth/login", {
@@ -68,12 +69,24 @@ const autenticar = async(req,res) => {
       pagina: "Iniciar Sesion",
       csrfToken:req.csrfToken(),
       errores:[{msg:'El usuario no ha sido confirmado'}]
-     
     });
-
   }
 
   //revisar el password
+
+  if(!usuario.verificarPassword(password)){
+    return res.render("auth/login", {
+      pagina: "Iniciar Sesion",
+      csrfToken:req.csrfToken(),
+      errores:[{msg:'El password es incorrecto'}]
+    });
+  }
+
+  //autenticar al usuario
+  const token = generarJWT({id:usuario.id, nombre:usuario.nombre})
+  console.log(token)
+
+ 
 
 }
 
