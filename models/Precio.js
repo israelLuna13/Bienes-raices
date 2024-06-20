@@ -1,4 +1,5 @@
 import db from '../config/dba.js'
+import { DataTypes } from 'sequelize';
 
 const Precio = db.define('precios',{
     
