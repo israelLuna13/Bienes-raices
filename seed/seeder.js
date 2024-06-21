@@ -1,8 +1,7 @@
 import categorias from "./categoria.js";
-import Categoria from "../models/Categoria.js";
 import db from '../config/dba.js'
-import Precio from "../models/Precio.js";
 import precios from "./precio.js";
+import {Categoria,Precio} from '../models/index.js'
 
 const importarDatos= async ()=>{
     try{
