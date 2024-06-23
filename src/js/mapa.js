@@ -1,8 +1,9 @@
 (function() {
-    const lat = 25.54389;
-    const lng = -103.41898;
+    //tomamos las coordenadas que selecciono el usuario y si no selecciono nada ponemos las coord default
+    const lat = document.querySelector('#lat').value || 25.54389;
+    const lng = document.querySelector('#lng').value ||-103.41898;
     let marker;
-
+    
     //utilizar provider y geocoder
     const geocodeService = L.esri.Geocoding.geocodeService()
 
