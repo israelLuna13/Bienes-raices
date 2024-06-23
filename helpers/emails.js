@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer'
 const emailRegistro = async(datos) => {
+
+  //credenciales que nos da mailtrap
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,

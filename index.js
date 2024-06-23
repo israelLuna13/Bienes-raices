@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //habilitamos cookieparser
+//el token sera almacenara en los cookies
 app.use(cookieParser())
 //habilitar CSRF
 app.use(csurf({cookie:true}))
@@ -32,7 +33,7 @@ console.log('Conexion Correcta a la base de datos')
 app.set('view engine','pug')
 app.set('views','./views')
 
-//Carpeta publica
+//Carpeta publica, esto permitira servir archivos estaticos como imagenes, CSS, JS
 app.use(express.static('public'));
 //routing
 app.use('/auth',usuarioRoutes)
