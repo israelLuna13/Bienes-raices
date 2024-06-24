@@ -1,12 +1,13 @@
 import express from "express"  
 import {body} from 'express-validator'
+import protegerRuta from '../middleware/protegerRuta.js'
 import { admin, crear,guardar } from "../controllers/propiedadController.js"
 const router = express.Router()
 
-router.get('/mis-propiedades',admin)
-router.get('/propiedades/crear',crear)
+router.get('/mis-propiedades',protegerRuta,admin)
+router.get('/propiedades/crear',protegerRuta,crear)
 //aqui mismo validamos los campos del formulario 
-router.post('/propiedades/crear',
+router.post('/propiedades/crear',protegerRuta,
     body('titulo').notEmpty().withMessage('El titulo del anuncio es Obligatorio'),
     body('descripcion').notEmpty().withMessage('La descripcion no puede ir vacia').
     isLength({max:200}).withMessage("La descripcion es muy larga"),

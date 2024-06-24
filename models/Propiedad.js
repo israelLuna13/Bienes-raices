@@ -33,7 +33,7 @@ const Propiedad = db.define(
       },
 
       calle:{
-        type:DataTypes.INTEGER,
+        type:DataTypes.STRING,
         allowNull:false
       },
       lat:{

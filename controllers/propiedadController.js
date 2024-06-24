@@ -57,7 +57,9 @@ const guardar =async (req,res)=>{
     //crear un registro
     //renombramos precio y categoria para que coincida con la base de datos
     const {titulo,descripcion,habitaciones,estacionamiento,wc,calle,lng,lat,precio:precioId,categoria:categoriaId} = req.body
-    console.log(req.body);
+    //tomamos el usuario que esta en req (se lo asignamos a req en el middleware)
+    const {id:usuarioId} = req.usuario
+    
     try {
         const propiedadGuardada = await Propiedad.create({
             titulo,
@@ -69,8 +71,13 @@ const guardar =async (req,res)=>{
             lat,
             lng,
             precioId,
-            categoriaId
+            categoriaId,
+            usuarioId,
+            imagen:''
         })
+        //redireccionamos
+        const {id} = propiedadGuardada
+        res.redirect(`/propiedades/agregar-imagen/${id}`)
         
     } catch (error) {
         console.log(error);
