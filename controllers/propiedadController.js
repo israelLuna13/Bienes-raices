@@ -2,8 +2,7 @@ import {validationResult}from 'express-validator'
 import {Precio,Categoria,Propiedad} from '../models/index.js'
 const admin = (req,res)=>{
     res.render('propiedades/admin',{
-        pagina:'Mis propiedades',
-        barra:true
+        pagina:'Mis propiedades'
     });
 }
 
@@ -18,7 +17,6 @@ const crear = async(req,res)=>{
     //se puede pasar directamente precios y categorias
     res.render('propiedades/crear',{
         pagina:'Crear Propiedad',
-        barra:true,
         csrfToken:req.csrfToken(),
         categorias,
         precios,
@@ -44,7 +42,6 @@ const guardar =async (req,res)=>{
         //se puede pasar directamente precios y categorias
       return   res.render('propiedades/crear',{
             pagina:'Crear Propiedad',
-            barra:true,
             csrfToken:req.csrfToken(),
             categorias,
             precios,
@@ -83,8 +80,33 @@ const guardar =async (req,res)=>{
         console.log(error);
     }
 }
+
+const agregarImagen = async(req,res)=>{
+
+    //validar que la propiedad exista
+    const {id} = req.params
+    const propiedad = await Propiedad.findByPk(id)
+    //si no existe
+    if(!propiedad){
+        return res.redirect('/mis-propiedades')
+    }
+
+    //validar que la propiedad no este publicada
+    if(propiedad.publicado){
+        return res.redirect('/mis-propiedades')
+    }
+
+    //validar que la propiedad pertenece a quien visita esta pagina
+    if(req.usuario.id.toString() !== propiedad.usuarioId.toString()){
+        return res.redirect('/mis-propiedades')
+    }
+    res.render('propiedades/agregar-imagen',{
+        pagina:'Agregar Imagen'
+}
+)}
 export{
     admin,
     crear,
-    guardar
+    guardar,
+    agregarImagen
 }

@@ -1,7 +1,7 @@
 import express from "express"  
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
-import { admin, crear,guardar } from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen } from "../controllers/propiedadController.js"
 const router = express.Router()
 
 router.get('/mis-propiedades',protegerRuta,admin)
@@ -19,5 +19,6 @@ router.post('/propiedades/crear',protegerRuta,
     body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
     ,guardar)
 
+    router.get('/propiedades/agregar-imagen/:id',protegerRuta,agregarImagen)
 
 export default router
