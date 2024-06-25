@@ -19,6 +19,9 @@ router.post('/propiedades/crear',protegerRuta,
     body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
     ,guardar)
 
-    router.get('/propiedades/agregar-imagen/:id',protegerRuta,agregarImagen)
+    router.get( '/propiedades/agregar-imagen/:id',protegerRuta,agregarImagen)
+    router.post('/propiedades/agregar-imagen/:id',(req,res)=>{
+        console.log('Suebiendo imagen...');
+    })
 
 export default router
