@@ -18,5 +18,26 @@ Dropzone.options.imagen = {
         'CSRF-Token':token
     },
     //identificador que se utiliza en el controlador
-    paramName:'imagen'
+    paramName:'imagen',
+
+    //al no usar la subida automatica de dropzone , tenemos que hacerlo manual
+    init:function(){
+        const dropzone = this
+        //tomamos el id del boton
+        const btnpublicar = document.querySelector('#publicar')
+        //cuando se lede click al boton mandamos llamar la funcion que hara la subida del archivo
+        btnpublicar.addEventListener('click',function(){
+            dropzone.processQueue()
+        })
+
+        //cuando se finalize el proceso de los archivos
+        dropzone.on('queuecomplete',function(){
+            //verificamos la cola de procesos de dropzone
+            if(dropzone.getActiveFiles().length == 0){
+                //redireccionamos con js
+                window.location.href='/mis-propiedades'
+            }
+        })
+
+    }
 }

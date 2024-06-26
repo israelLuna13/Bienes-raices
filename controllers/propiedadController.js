@@ -107,7 +107,7 @@ const agregarImagen = async(req,res)=>{
 }
 )}
 
-const almacenarImagen=async(req,res)=>{
+const almacenarImagen=async(req,res,next)=>{
     //validar que la propiedad exista
     const {id} = req.params
     const propiedad = await Propiedad.findByPk(id)
@@ -133,6 +133,11 @@ const almacenarImagen=async(req,res)=>{
          propiedad.imagen = req.file.filename 
          propiedad.publicado = true
          await propiedad.save()//guardamos los cambios
+
+         //redireccionamos en js desde agregarImagen.js
+         
+         //redireccionamos al siguiente middleware
+         next()
         
     } catch (error) {
         console.log(error)
