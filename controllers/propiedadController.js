@@ -179,14 +179,81 @@ const editar = async(req,res)=>{
 ]);
 
 //se puede pasar directamente precios y categorias
-console.log(propiedad);
 res.render('propiedades/editar',{
-    pagina:'Editar Propiedad',
+    pagina:`Editar propiedad ${propiedad.titulo}`,
     csrfToken:req.csrfToken(),
     categorias,
     precios,
     datos:propiedad // agregamos datos para que no marque error
 });
+}
+
+const guardarCambios =async (req,res)=>{
+    //verificar la validacion 
+    //validacion, aqui se guardaran los errores si es que hay
+    //estos errores vienen del router 
+    let resultado = validationResult(req)
+    //si es diferente de vacio quiere decir que no hay errores
+    if(!resultado.isEmpty()){
+        //si hay error
+    
+        //consultar modelo de precio y categorias
+      const [categorias,precios] = await Promise.all([
+        Categoria.findAll(),
+        Precio.findAll()
+          ]);
+
+      return   res.render('propiedades/editar',{
+            pagina:'Crear Propiedad',
+            csrfToken:req.csrfToken(),
+            categorias,
+            precios,
+            errores:resultado.array(),
+            datos:req.body//esto sirve para mantener los datos en el form y no se pierdan
+        });
+    }
+
+
+    const {id} = req.params
+
+    //validar que la propiedad exista
+    const propiedad = await Propiedad.findByPk(id)
+
+    if(!propiedad){
+        return res.redirect('/mis-propiedades')
+    }
+
+    //revisar quie quien visita la url, es quien creo la propiedad
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString()){
+        return res.redirect('/mis-propiedades')
+    }
+
+    //reescribir el objeto y actualizarlo
+
+    try {
+          //renombramos precio y categoria para que coincida con la base de datos
+     const {titulo,descripcion,habitaciones,estacionamiento,wc,calle,lng,lat,precio:precioId,categoria:categoriaId} = req.body
+     propiedad.set({
+        titulo,
+        descripcion,
+        habitaciones,
+        estacionamiento,
+        wc,
+        calle,
+        lat,
+        lng,
+        precioId,
+        categoriaId
+     })
+
+     await propiedad.save()
+     res.redirect('/mis-propiedades')
+   
+    } catch (error) {
+        console.log(errro);
+    }
+
+
 }
 export{
     admin,
@@ -194,5 +261,6 @@ export{
     guardar,
     agregarImagen,
     almacenarImagen,
-    editar
+    editar,
+    guardarCambios
 }
