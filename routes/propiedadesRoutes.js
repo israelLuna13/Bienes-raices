@@ -1,7 +1,7 @@
 import express from "express"  
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
-import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios } from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar } from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
 
@@ -36,4 +36,5 @@ router.post('/propiedades/crear',protegerRuta,
         body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
         ,guardarCambios)
 
+        router.post('/propiedades/eliminar/:id',protegerRuta,eliminar )
 export default router
