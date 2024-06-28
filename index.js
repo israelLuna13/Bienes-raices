@@ -3,6 +3,8 @@ import  csurf from 'csurf'
 import cookieParser  from 'cookie-parser'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import propiedadesRoutes from './routes/propiedadesRoutes.js'
+import appRoutes from './routes/appRoutes.js'
+
 import db from './config/dba.js'
 
 //crear la app
@@ -36,6 +38,7 @@ app.set('views','./views')
 //Carpeta publica, esto permitira servir archivos estaticos como imagenes, CSS, JS
 app.use(express.static('public'));
 //routing
+app.use('/',appRoutes)
 app.use('/auth',usuarioRoutes)
 app.use('/',propiedadesRoutes)
 
