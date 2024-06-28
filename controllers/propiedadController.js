@@ -1,23 +1,61 @@
 import {validationResult}from 'express-validator'
 import {Precio,Categoria,Propiedad} from '../models/index.js'
 import {unlink} from 'node:fs/promises'
+import { query } from 'express';
 const admin = async(req,res)=>{
-    const {id} = req.usuario
-    const propiedades = await Propiedad.findAll({
-        where:{
-            usuarioId:id
-        },
-        //relacionamos Propiedad con categoria y propiedad con precio
-        include:[
-            {model:Categoria,as: 'categoria' },
-            {model:Precio, as:'precio'}
-        ]
-    })
-    res.render('propiedades/admin',{
-        pagina:'Mis propiedades',
-        propiedades,
-        csrfToken:req.csrfToken()
-    });
+    //leer query string 
+    const {pagina:paginaActual}=req.query
+
+    //expresion regular
+    const regex = /^[0-9]$/
+    //comprobamos si el query string cumple con la expresion regular
+    if(!regex.test(paginaActual)){
+
+        return res.redirect('/mis-propiedades?pagina=1')
+    }
+
+    try {
+        const {id} = req.usuario
+
+        //limites y offset para el paginador
+        const limit =5 //numero de propiedades por pagina
+        const offset = (paginaActual * limit) - limit // cantidad de paginas que se va a saltar
+        const [propiedades,total] = await Promise.all([
+
+            //buscamos todas las propiedades
+             Propiedad.findAll({
+                limit,
+                offset,
+                where:{
+                    usuarioId:id
+                },
+                //relacionamos Propiedad con categoria y propiedad con precio
+                include:[
+                    {model:Categoria,as: 'categoria' },
+                    {model:Precio, as:'precio'}
+                ]
+            }),
+            //contamos las propiedades que publico el usuario
+            Propiedad.count({
+                where:{
+                    usuarioId:id
+                }
+            })
+        ])
+
+        res.render('propiedades/admin',{
+            pagina:'Mis propiedades',
+            propiedades,
+            csrfToken:req.csrfToken(),
+            paginas:Math.ceil(total/limit),
+            paginaActual
+        });
+    } catch (error) {
+        console.log(error);
+        
+    }
+
+ 
 }
 
 //formulario para crear una nueva propiedad
@@ -305,6 +343,8 @@ const mostrarPropiedad = async(req,res)=>{
         pagina:propiedad.titulo
     })
 }
+
+
 
 export{
     admin,
