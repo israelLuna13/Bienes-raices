@@ -1,4 +1,5 @@
 import { Categoria,Precio,Propiedad} from '../models/index.js'
+import {Sequelize} from 'sequelize'
 
 //estas acciones seran para la vista publica o vita general
 
@@ -45,19 +46,77 @@ const inicio =async (req,res)=>{
         categorias,
         precios,
         casas,
-        departamentos
+        departamentos,
+        csrfToken:req.csrfToken()
     })
 }
 
-const categoria = (req,res) =>{
+const categoria = async(req,res) =>{
 
+    const {id} = req.params
+
+    //comprobar que la categoria exista
+     const categoria = await Categoria.findByPk(id)
+
+     //si la categoria no existe
+     if(!categoria){
+       return res.redirect('/404')
+     }
+
+    //obtener las propiedades de la categoria
+    const propiedades = await Propiedad.findAll({
+        where:{
+            categoriaId:id
+        },
+        include:[{model:Precio, as:'precio'}]
+    })
+
+    res.render('categoria',{
+        pagina:`${categoria.nombre}s en Venta`,
+        propiedades,
+        csrfToken:req.csrfToken()
+    })
 }
 
 const noEncontrado = (req,res)=>{
-
+    res.render('404',{
+        pagina:'No encontrado',
+        csrfToken:req.csrfToken()
+    })
 }
-const buscador = (req,res)=>{
 
+const buscador =async (req,res)=>{
+
+    //obtenemos el termino de busqueda
+    const {termino} = req.body
+
+    //validar que termino no este vacio
+    if(!termino.trim()){
+        //nos lleva a la ruta anterior
+        return res.redirect('back')
+    }
+
+    //consultar las propiedades
+    const propiedades = await Propiedad.findAll({
+        //buscamos todas las propiedades que coincidan con el titulo
+        where:{
+            //buscamos en todo el titulo si termino esta ahi 
+            titulo:{
+                [Sequelize.Op.like]: `%${termino}%`
+            }
+        },
+        //en la busqueda incluimos el modelo de precios
+        include:[
+            {model:Precio, as:'precio'}
+        ]
+    })
+
+    res.render('busqueda',{
+        pagina:'Resultados de la Busqueda',
+        propiedades,
+        csrfToken:req.csrfToken()
+
+    })
 }
 export {
     inicio,

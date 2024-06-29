@@ -326,7 +326,6 @@ const eliminar = async(req,res)=>{
 //muestra una propiedad
 const mostrarPropiedad = async(req,res)=>{
 
-    
     const {id} = req.params
     //validar que la propuedad exista
     const propiedad = await Propiedad.findByPk(
@@ -335,19 +334,17 @@ const mostrarPropiedad = async(req,res)=>{
         include:[
             {model:Categoria,as: 'categoria' },
             {model:Precio, as:'precio'}
-        ]}
-    )
+        ]})
 
     if(!propiedad){
         return res.redirect('/404')
     }
     res.render('propiedades/mostrar',{
         propiedad,
-        pagina:propiedad.titulo
+        pagina:propiedad.titulo,
+        csrfToken:req.csrfToken()
     })
 }
-
-
 
 export{
     admin,
