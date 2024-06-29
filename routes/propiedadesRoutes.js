@@ -1,6 +1,7 @@
 import express from "express"  
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
+import identificarUsuario from "../middleware/identificarUsuario.js"
 import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,mostrarPropiedad } from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
@@ -38,9 +39,8 @@ router.post('/propiedades/crear',protegerRuta,
 
         router.post('/propiedades/eliminar/:id',protegerRuta,eliminar )
 
-
-
         //area publica - no necesita una cuenta
-        router.get('/propiedad/:id',mostrarPropiedad)
+        router.get('/propiedad/:id',identificarUsuario
+                                   ,mostrarPropiedad)
 
 export default router
