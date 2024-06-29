@@ -1,5 +1,6 @@
 import {Propiedad,Precio,Categoria} from '../models/index.js'
 
+//esta accion servira para mostrar todas las propiedades en el mapa
 const propiedades = async(req,res) =>{
 
     //consultamos todas las propiedades junto con categorias y precios
