@@ -2,12 +2,14 @@ import express from "express"
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
 import identificarUsuario from "../middleware/identificarUsuario.js"
-import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,mostrarPropiedad } from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,mostrarPropiedad,enviarMensaje, verMensajes } from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
 
-router.get('/mis-propiedades',protegerRuta,admin)
-router.get('/propiedades/crear',protegerRuta,crear)
+router.get('/mis-propiedades',protegerRuta,admin) //vista para el admin
+router.get('/propiedades/crear',protegerRuta,crear)//crear propiedad
+
+
 //aqui mismo validamos los campos del formulario 
 router.post('/propiedades/crear',protegerRuta,
     body('titulo').notEmpty().withMessage('El titulo del anuncio es Obligatorio'),
@@ -19,7 +21,7 @@ router.post('/propiedades/crear',protegerRuta,
     body('estacionamiento').isNumeric().withMessage('Selecciona la cantidad de estacionamientos'),
     body('wc').isNumeric().withMessage('Selecciona la cantidad de baños'),
     body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
-    ,guardar)
+    ,guardar)//guardar una propiedad
 
     router.get( '/propiedades/agregar-imagen/:id',protegerRuta,agregarImagen)
     router.post('/propiedades/agregar-imagen/:id',protegerRuta,upload.single('imagen'),almacenarImagen)
@@ -42,5 +44,17 @@ router.post('/propiedades/crear',protegerRuta,
         //area publica - no necesita una cuenta
         router.get('/propiedad/:id',identificarUsuario
                                    ,mostrarPropiedad)
+
+        //almacenar los mensajes enviados
+        router.post('/propiedad/:id',
+            identificarUsuario,
+            body('mensaje').isLength({min:10}).withMessage('El mensaje no puede ir vacio o es muy corto') 
+            ,enviarMensaje)
+
+        //ver mensajes que tienen las propiedades    
+        router.get('/mensajes/:id',
+            protegerRuta,verMensajes
+        )   
+
 
 export default router
