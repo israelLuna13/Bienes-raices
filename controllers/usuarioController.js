@@ -92,6 +92,12 @@ const autenticar = async(req,res) => {
   }).redirect('/mis-propiedades')
 }
 
+//cerrar sesion
+const cerrarSesion = (req,res)=>{
+  //limpiamos el token de la cookie para cerrar sesion
+  return res.clearCookie('_token').status(200).redirect('/auth/login')
+}
+
 const registrar = async (req, res) => {
   //validamos los campos del formulario
   await check("nombre")
@@ -324,6 +330,7 @@ export {
   resetPassword,
   comprobarToken,
   nuevoPassword,
-  autenticar
+  autenticar,
+  cerrarSesion
 };
 

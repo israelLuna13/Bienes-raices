@@ -8,7 +8,7 @@ import {
 } from "../models/index.js";
 import { unlink } from "node:fs/promises";
 import { esVendedor, formatearFecha } from "../helpers/index.js";
-
+import {emailMensaje} from '../helpers/emails.js'
 const admin = async (req, res) => {
   //leer query string
   const { pagina: paginaActual } = req.query;
@@ -399,6 +399,7 @@ const enviarMensaje = async (req, res) => {
     include: [
       { model: Categoria, as: "categoria" },
       { model: Precio, as: "precio" },
+      { model: Usuario, as: "usuario" },
     ],
   });
 
@@ -425,6 +426,8 @@ const enviarMensaje = async (req, res) => {
     });
   }
 
+
+ 
   //obtenemos los datos para crear el mensaje
   const { mensaje } = req.body;
   const { id: propiedadId } = req.params;
@@ -436,8 +439,34 @@ const enviarMensaje = async (req, res) => {
     propiedadId,
     usuarioId,
   });
-  //cuando se envie el mensaje redireccionamos al home
-  res.redirect("/");
+
+  const  {titulo}=propiedad;
+ const  {nombre:vendedor}=propiedad.usuario;
+ const  {nombre}=req.usuario;
+ const {email}=req.usuario;
+  //enviamos el correo al vendedor
+  emailMensaje({
+    email,
+    nombre,
+    titulo,
+    vendedor,
+    mensaje
+  })
+
+
+  //si se deja este codigo , se va a estar enviando el mismo mensaje cuando se vuelva a carga esta vista
+  // return res.render("propiedades/mostrar", {
+  //   propiedad,
+  //   pagina: propiedad.titulo,
+  //   csrfToken: req.csrfToken(),
+  //   usuario: req.usuario,
+  //   esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+  //   errores: resultado.array(),
+  //   enviado:true
+  // });
+
+    //cuando se envie el mensaje redireccionamos al home
+    res.redirect("/");
 };
 
 //leer mensajes recibidos

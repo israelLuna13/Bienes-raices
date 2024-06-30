@@ -62,8 +62,36 @@ const emailOlvidePassword = async(datos) => {
   })
 }
 
+
+//enviar un correo cuando un usuario mande mensaje al vendedor
+const emailMensaje = async(datos) => {
+  const transport = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+  const {email,nombre,titulo,vendedor,mensaje} = datos;
+
+  //enviar el email
+  await transport.sendMail({
+      from:'BienesRaices.com',
+      to:email,
+      subject:'Informacion de una propiedad',
+      text:`El usuario ${nombre} te ha enviado un mensaje acerca de la propiedad ${titulo}` ,
+      html: `
+              <p>Hola ${vendedor},tienes un nuevo mensaje acerca de un propiedad en bienesRaices.com</p>
+              <p>${mensaje}</p>
+              <p>Responde lo mas pronto posible</p>`
+  })
+}
+
 export {
     emailRegistro,
-    emailOlvidePassword
+    emailOlvidePassword,
+    emailMensaje
     
 }
