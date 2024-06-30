@@ -2,7 +2,7 @@ import express from "express"
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
 import identificarUsuario from "../middleware/identificarUsuario.js"
-import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,mostrarPropiedad,enviarMensaje, verMensajes } from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,cambiarEstado,mostrarPropiedad,enviarMensaje, verMensajes } from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
 
@@ -27,6 +27,7 @@ router.post('/propiedades/crear',protegerRuta,
     router.post('/propiedades/agregar-imagen/:id',protegerRuta,upload.single('imagen'),almacenarImagen)
     router.get('/propiedades/editar/:id',protegerRuta,editar)
 
+    //editar una propiedad
     router.post('/propiedades/editar/:id',protegerRuta,
         body('titulo').notEmpty().withMessage('El titulo del anuncio es Obligatorio'),
         body('descripcion').notEmpty().withMessage('La descripcion no puede ir vacia').
@@ -39,7 +40,15 @@ router.post('/propiedades/crear',protegerRuta,
         body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
         ,guardarCambios)
 
+        //eliminar
         router.post('/propiedades/eliminar/:id',protegerRuta,eliminar )
+
+        //con esta ruta cambiamos el estado de los botones
+        //esta ruta sera usada por fetch
+        router.put('/propiedades/:id',
+            protegerRuta,
+            cambiarEstado
+        )
 
         //area publica - no necesita una cuenta
         router.get('/propiedad/:id',identificarUsuario
