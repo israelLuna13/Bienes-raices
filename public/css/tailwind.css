@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* reescribimos esta clase 
+ */
+.leaflet-container a {
+    color: #fff !important;;
+}

@@ -1,0 +1,19 @@
+extends ../layout/admin
+
+block styles 
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css")
+
+block contenido
+    div(class="py-5")
+        h1(class="text-center text-4xl font-extrabold") Bienvenido
+            br
+            span(class='text-indigo-600')=nombre
+
+    div 
+        h2 Informacion
+            p Nombre
+            p Email
+            p Propiedades publicadas 
+            p Mensajes
+
+
