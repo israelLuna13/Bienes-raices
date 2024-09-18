@@ -504,10 +504,43 @@ const verMensajes = async (req, res) => {
 };
 const verPerfil = async(req,res)=>{
 
-  const {nombre,email} = req.usuario
+  
+  const {nombre,email,id} = req.usuario
+
+  const [propiedades, total] = await Promise.all([
+    //buscamos todas las propiedades
+    Propiedad.findAll({
+      //relacionamos Propiedad con categoria , precio y con mensaje
+      include: [
+        { model: Mensaje, as: "mensajes" }
+      ],
+    }),
+    //contamos las propiedades que publico el usuario
+    Propiedad.count({
+      where: {
+        usuarioId: id,
+      },
+    }),
+  ]);
+     
   return res.render("propiedades/perfil",{
-    nombre,email
+    nombre,
+    email,
+    propiedades,total
   });
+}
+
+const mostrarFormulario = async(req,res)=>{
+  const {id,nombre,email} = req.usuario
+
+  return res.render("propiedades/formEditar",{
+    id,
+    nombre,
+    email
+  })
+}
+const editarPerfil = async(req,res)=>{
+
 }
 
 
@@ -524,5 +557,7 @@ export {
   mostrarPropiedad,
   enviarMensaje,
   verMensajes,
-  verPerfil
+  verPerfil,
+  mostrarFormulario,
+  editarPerfil
 };

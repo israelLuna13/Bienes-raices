@@ -2,7 +2,7 @@ import express from "express"
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
 import identificarUsuario from "../middleware/identificarUsuario.js"
-import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,cambiarEstado,mostrarPropiedad,enviarMensaje, verMensajes,verPerfil } from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,cambiarEstado,mostrarPropiedad,enviarMensaje, verMensajes,verPerfil ,editarPerfil,mostrarFormulario} from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
 
@@ -66,10 +66,18 @@ router.post('/propiedades/crear',protegerRuta,
         ) 
         
         //ruta para el perfil del usuario
+     
         router.get('/mi-perfil',
             protegerRuta,
-            verPerfil
+            verPerfil)
+
+        router.get('/editar-perfil',
+            protegerRuta,
+            mostrarFormulario
         )
-
-
+        router.post('/editar-perfil',
+            protegerRuta,
+            editarPerfil
+        )
+   
 export default router
