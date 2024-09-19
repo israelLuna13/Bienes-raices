@@ -50,6 +50,7 @@ const admin = async (req, res) => {
     ]);
 
     res.render("propiedades/admin", {
+      id,
       pagina: "Mis propiedades",
       propiedades,
       csrfToken: req.csrfToken(),
@@ -78,6 +79,7 @@ const crear = async (req, res) => {
     csrfToken: req.csrfToken(),
     categorias,
     precios,
+    id:req.usuario.id,
     datos: {}, // agregamos datos para que no marque error
   });
 };
@@ -234,6 +236,7 @@ const editar = async (req, res) => {
     csrfToken: req.csrfToken(),
     categorias,
     precios,
+    id:req.usuario.id,
     datos: propiedad, // agregamos datos para que no marque error
   });
 };
@@ -245,7 +248,6 @@ const guardarCambios = async (req, res) => {
   let resultado = validationResult(req);
   //si es diferente de vacio quiere decir que no hay errores
   if (!resultado.isEmpty()) {
-    //si hay error
 
     //consultar modelo de precio y categorias
     const [categorias, precios] = await Promise.all([
@@ -263,7 +265,7 @@ const guardarCambios = async (req, res) => {
     });
   }
 
-  const { id } = req.params;
+    const { id } = req.params;
 
   //validar que la propiedad exista
   const propiedad = await Propiedad.findByPk(id);
@@ -382,11 +384,13 @@ const mostrarPropiedad = async (req, res) => {
   if (!propiedad || !propiedad.publicado) {
     return res.redirect("/404");
   }
+
   res.render("propiedades/mostrar", {
     propiedad,
     pagina: propiedad.titulo,
     csrfToken: req.csrfToken(),
     usuario: req.usuario,
+    id:req.usuario.id,
     esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
   });
 };
@@ -503,12 +507,11 @@ const verMensajes = async (req, res) => {
   });
 };
 const verPerfil = async(req,res)=>{
+  const {id} = req.params //id de la url
 
-  
-  const {nombre,email,id} = req.usuario
-
-  const [propiedades, total] = await Promise.all([
+  const [usuario,propiedades, total] = await Promise.all([
     //buscamos todas las propiedades
+    Usuario.findByPk(id),
     Propiedad.findAll({
       //relacionamos Propiedad con categoria , precio y con mensaje
       include: [
@@ -522,24 +525,60 @@ const verPerfil = async(req,res)=>{
       },
     }),
   ]);
-     
+  if(!usuario)
+  {
+      return res.redirect("/mis-propiedades");
+  }
+  const {nombre,email}=usuario 
+
   return res.render("propiedades/perfil",{
     nombre,
     email,
-    propiedades,total
+    id,
+    propiedades,
+    total
   });
 }
 
 const mostrarFormulario = async(req,res)=>{
-  const {id,nombre,email} = req.usuario
+  const {id} = req.params
+  const usuario = await Usuario.findByPk(id)
+  if(!usuario)
+  {
+    return res.redirect("/mis-propiedades")
+  }
 
   return res.render("propiedades/formEditar",{
-    id,
-    nombre,
-    email
+    csrfToken: req.csrfToken(),
+    datos:usuario,
+    pagina:"Editar informacion"
   })
 }
 const editarPerfil = async(req,res)=>{
+  const {id} = req.params
+
+  let resultado = validationResult(req);
+  //si es diferente de vacio quiere decir que no hay errores
+
+  if (!resultado.isEmpty()) {
+    console.log('errores');
+    
+    return res.render("propiedades/formEditar",{
+      csrfToken: req.csrfToken(),
+      id,
+      errores: resultado.array(),
+      pagina:"Editar informacion",
+      datos: req.body, //esto sirve para mantener los datos en el form y no se pierdan
+    })
+  }
+  //sin errores
+
+  const usuario = await Usuario.findByPk(id)
+  if(!usuario)
+  {
+    return res.redirect("/mis-propiedades")
+  }
+  // cambiar email y nombre
 
 }
 

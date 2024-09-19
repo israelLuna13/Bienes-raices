@@ -67,16 +67,19 @@ router.post('/propiedades/crear',protegerRuta,
         
         //ruta para el perfil del usuario
      
-        router.get('/mi-perfil',
+        router.get('/mi-perfil/:id',
             protegerRuta,
             verPerfil)
 
-        router.get('/editar-perfil',
+            //cuando el post tiene la misma url que el get, no hace falta poner el action en el form del post
+        router.get('/editar-perfil/:id',
             protegerRuta,
             mostrarFormulario
         )
-        router.post('/editar-perfil',
+        router.post('/editar-perfil/:id',
             protegerRuta,
+            body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
+            body('email').isEmail().withMessage('El email es obligatorio'),
             editarPerfil
         )
    

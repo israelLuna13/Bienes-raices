@@ -9,21 +9,20 @@ block contenido
             br
             span(class='text-indigo-600')=nombre
 
-    div(class='flex justify-center bg-indigo-50 rounded-xl') 
+    div(class='flex justify-center bg-indigo-50 rounded-xl py-4') 
         div(class='w-full md:w-8/12 lg:w-6/12 flex flex-col items-center md:flex-row')
             div(class='w-8/12 lg:w-6/12 px-5')
                 img(src="/img/usuario.png", alt="Imagen de perfil")
-            div(class='md:w-8/12 lg:w-6/12 px-5 flex flex-col items-center md:justify-center md:items-start py-10 md:py-10 text-xl font-bold')
-                p=`Nombre:${nombre}`
-                p=`Email:${email}` 
-                div(class='text-purple-700')
-                    p=total 
-                        span(class='font-normal') Publicaciones
+            div(class='md:w-8/12 lg:w-6/12 px-5  flex flex-col items-center md:justify-center md:items-start py-10 md:py-10 text-xl font-bold') 
+                p(class='mb-4')=`Nombre:${nombre}`
+                p(class='mb-4')=`Email:${email}` 
+                p(class='mb-4')=total 
+                    span(class='font-normal')  Publicaciones
                     
-                    p #{propiedades.reduce((acc, propiedad) => acc + propiedad.mensajes.length, 0)}
-                        span(class='font-normal') Mensajes
+                p #{propiedades.reduce((acc, propiedad) => acc + propiedad.mensajes.length, 0)}
+                    span(class='font-normal')  Mensajes
     div(class="flex justify-center")
-        a(class="w-2/12 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-bold uppercase cursor-pointer" href='/editar-perfil') Editar Informacion
+        a(class="w-2/12 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white text-center font-bold uppercase cursor-pointer" href=`/editar-perfil/${id}`) Editar Informacion
 
     div 
 
