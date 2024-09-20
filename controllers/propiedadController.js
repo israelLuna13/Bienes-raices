@@ -8,7 +8,7 @@ import {
 } from "../models/index.js";
 import { unlink } from "node:fs/promises";
 import { esVendedor, formatearFecha } from "../helpers/index.js";
-import {emailMensaje} from '../helpers/emails.js'
+import { emailMensaje } from "../helpers/emails.js";
 const admin = async (req, res) => {
   //leer query string
   const { pagina: paginaActual } = req.query;
@@ -79,7 +79,7 @@ const crear = async (req, res) => {
     csrfToken: req.csrfToken(),
     categorias,
     precios,
-    id:req.usuario.id,
+    id: req.usuario.id,
     datos: {}, // agregamos datos para que no marque error
   });
 };
@@ -236,7 +236,7 @@ const editar = async (req, res) => {
     csrfToken: req.csrfToken(),
     categorias,
     precios,
-    id:req.usuario.id,
+    id: req.usuario.id,
     datos: propiedad, // agregamos datos para que no marque error
   });
 };
@@ -248,7 +248,6 @@ const guardarCambios = async (req, res) => {
   let resultado = validationResult(req);
   //si es diferente de vacio quiere decir que no hay errores
   if (!resultado.isEmpty()) {
-
     //consultar modelo de precio y categorias
     const [categorias, precios] = await Promise.all([
       Categoria.findAll(),
@@ -265,7 +264,7 @@ const guardarCambios = async (req, res) => {
     });
   }
 
-    const { id } = req.params;
+  const { id } = req.params;
 
   //validar que la propiedad exista
   const propiedad = await Propiedad.findByPk(id);
@@ -342,7 +341,7 @@ const eliminar = async (req, res) => {
 };
 
 //modifica el estado de la propiedad
-const cambiarEstado =async (req,res) =>{
+const cambiarEstado = async (req, res) => {
   const { id } = req.params;
 
   //validar que la propiedad exista
@@ -357,16 +356,16 @@ const cambiarEstado =async (req,res) =>{
     return res.redirect("/mis-propiedades");
   }
 
-  //actualizar 
+  //actualizar
   // si es true lo pane false y si es false lo pone true
-  propiedad.publicado = !propiedad.publicado
-  await propiedad.save()
+  propiedad.publicado = !propiedad.publicado;
+  await propiedad.save();
 
   //mandamos como json la respuesta a cambiarEstado.js para poder hacer validaciones
   res.json({
-    resultado:'true'
-  })
-}
+    resultado: "true",
+  });
+};
 
 //muestra una propiedad
 const mostrarPropiedad = async (req, res) => {
@@ -390,7 +389,7 @@ const mostrarPropiedad = async (req, res) => {
     pagina: propiedad.titulo,
     csrfToken: req.csrfToken(),
     usuario: req.usuario,
-    id:req.usuario.id,
+    id: req.usuario.id,
     esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
   });
 };
@@ -430,8 +429,6 @@ const enviarMensaje = async (req, res) => {
     });
   }
 
-
- 
   //obtenemos los datos para crear el mensaje
   const { mensaje } = req.body;
   const { id: propiedadId } = req.params;
@@ -444,19 +441,18 @@ const enviarMensaje = async (req, res) => {
     usuarioId,
   });
 
-  const  {titulo}=propiedad;
- const  {nombre:vendedor}=propiedad.usuario;
- const  {nombre}=req.usuario;
- const {email}=req.usuario;
+  const { titulo } = propiedad;
+  const { nombre: vendedor } = propiedad.usuario;
+  const { nombre } = req.usuario;
+  const { email } = req.usuario;
   //enviamos el correo al vendedor
   emailMensaje({
     email,
     nombre,
     titulo,
     vendedor,
-    mensaje
-  })
-
+    mensaje,
+  });
 
   //si se deja este codigo , se va a estar enviando el mismo mensaje cuando se vuelva a carga esta vista
   // return res.render("propiedades/mostrar", {
@@ -469,8 +465,8 @@ const enviarMensaje = async (req, res) => {
   //   enviado:true
   // });
 
-    //cuando se envie el mensaje redireccionamos al home
-    res.redirect("/");
+  //cuando se envie el mensaje redireccionamos al home
+  res.redirect("/");
 };
 
 //leer mensajes recibidos
@@ -506,17 +502,21 @@ const verMensajes = async (req, res) => {
     formatearFecha,
   });
 };
-const verPerfil = async(req,res)=>{
-  const {id} = req.params //id de la url
+const verPerfil = async (req, res) => {
 
-  const [usuario,propiedades, total] = await Promise.all([
+  const { id } = req.params; //id de la url
+  //la id de la url y el id del usuario en session no son iguales
+  if(id != req.usuario.id)
+  {
+    return res.redirect("/mis-propiedades");
+  }
+
+  const [usuario, propiedades, total] = await Promise.all([
     //buscamos todas las propiedades
     Usuario.findByPk(id),
     Propiedad.findAll({
       //relacionamos Propiedad con categoria , precio y con mensaje
-      include: [
-        { model: Mensaje, as: "mensajes" }
-      ],
+      include: [{ model: Mensaje, as: "mensajes" }],
     }),
     //contamos las propiedades que publico el usuario
     Propiedad.count({
@@ -525,63 +525,117 @@ const verPerfil = async(req,res)=>{
       },
     }),
   ]);
-  if(!usuario)
-  {
-      return res.redirect("/mis-propiedades");
+  if (!usuario) {
+    return res.redirect("/mis-propiedades");
   }
-  const {nombre,email}=usuario 
+  const { nombre, email } = usuario;
 
-  return res.render("propiedades/perfil",{
+  return res.render("propiedades/perfil", {
     nombre,
     email,
     id,
     propiedades,
-    total
+    total,
   });
-}
+};
 
-const mostrarFormulario = async(req,res)=>{
-  const {id} = req.params
-  const usuario = await Usuario.findByPk(id)
-  if(!usuario)
-  {
-    return res.redirect("/mis-propiedades")
+const mostrarFormulario = async (req, res) => {
+  const { id } = req.params;
+  if(id != req.usuario.id)
+    {
+      return res.redirect("/mis-propiedades");
+    }
+  const usuario = await Usuario.findByPk(id);
+  if (!usuario) {
+    return res.redirect("/mis-propiedades");
   }
 
-  return res.render("propiedades/formEditar",{
+  return res.render("propiedades/formEditar", {
     csrfToken: req.csrfToken(),
-    datos:usuario,
-    pagina:"Editar informacion"
-  })
-}
-const editarPerfil = async(req,res)=>{
-  const {id} = req.params
+    datos: usuario,
+    pagina: "Editar informacion",
+  });
+};
+const editarPerfil = async (req, res) => {
+  const { id } = req.params;
+
+  if(id != req.usuario.id)
+    {
+      return res.redirect("/mis-propiedades");
+    }
 
   let resultado = validationResult(req);
   //si es diferente de vacio quiere decir que no hay errores
-
   if (!resultado.isEmpty()) {
-    console.log('errores');
-    
-    return res.render("propiedades/formEditar",{
+    return res.render("propiedades/formEditar", {
       csrfToken: req.csrfToken(),
       id,
       errores: resultado.array(),
-      pagina:"Editar informacion",
+      pagina: "Editar informacion",
       datos: req.body, //esto sirve para mantener los datos en el form y no se pierdan
-    })
+    });
   }
   //sin errores
-
-  const usuario = await Usuario.findByPk(id)
-  if(!usuario)
-  {
-    return res.redirect("/mis-propiedades")
+  const usuario = await Usuario.findByPk(id);
+  if (!usuario) {
+    return res.redirect("/mis-propiedades");
   }
+
   // cambiar email y nombre
+  try {
+    const { nombre: nombreDb, email: emailDb, id } = usuario;
+    //renombramos precio y categoria para que coincida con la base de datos
+    const { nombre, email } = req.body;
 
-}
+    if (nombreDb == nombre && emailDb == email) {
+      // no se hizo ningun cambio
+      return res.redirect(`/mi-perfil/${id}`);
+    }
+    if (nombre != nombreDb) 
+       usuario.set({
+        nombre
+      })
+    if (email != emailDb) 
+       usuario.set({
+        email
+      })
+    //guaradamos los cambios en el objeto
+    await usuario.save();
+    //redireccionamos
+    res.redirect(`/mi-perfil/${id}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
+// const agregarImagenPerfil = async(req,res)=>
+// {
+//    //validar que la propiedad exista
+//   const { id } = req.params;
+//   const propiedad = await Propiedad.findByPk(id);
+//   //si no existe
+//   if (!propiedad) {
+//     return res.redirect("/mis-propiedades");
+//   }
+
+//   //validar que la propiedad no este publicada
+//   if (propiedad.publicado) {
+//     return res.redirect("/mis-propiedades");
+//   }
+
+//   //validar que la propiedad pertenece a quien visita esta pagina
+//   if (req.usuario.id.toString() !== propiedad.usuarioId.toString()) {
+//     return res.redirect("/mis-propiedades");
+//   }
+//   res.render("propiedades/agregar-imagen", {
+//     pagina: `Agregar imagen: ${propiedad.titulo}`,
+//     csrfToken: req.csrfToken(),
+//     propiedad,
+//   });
+//   return res.render("propiedades/imagen-perfil",{
+//     csrfToken: req.csrfToken()
+//   })
+// }
 
 export {
   admin,
@@ -598,5 +652,6 @@ export {
   verMensajes,
   verPerfil,
   mostrarFormulario,
-  editarPerfil
+  editarPerfil,
+  //agregarImagenPerfil
 };

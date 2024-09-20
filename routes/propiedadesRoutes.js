@@ -39,7 +39,7 @@ router.post('/propiedades/crear',protegerRuta,
         body('wc').isNumeric().withMessage('Selecciona la cantidad de baños'),
         body('lat').isNumeric().withMessage('Selecciona la Propiedad en el Mapa')
         ,guardarCambios)
-
+//----------------------------------------------------------------------------------------------------------------
         //eliminar
         router.post('/propiedades/eliminar/:id',protegerRuta,eliminar )
 
@@ -53,7 +53,7 @@ router.post('/propiedades/crear',protegerRuta,
         //area publica - no necesita una cuenta
         router.get('/propiedad/:id',identificarUsuario
                                    ,mostrarPropiedad)
-
+//-------------------------------------------------------------------mensajes ----
         //almacenar los mensajes enviados
         router.post('/propiedad/:id',
             identificarUsuario,
@@ -65,7 +65,7 @@ router.post('/propiedades/crear',protegerRuta,
             protegerRuta,verMensajes
         ) 
         
-        //ruta para el perfil del usuario
+        //-----------------------------------------------------rutaspara el perfil del usuario
      
         router.get('/mi-perfil/:id',
             protegerRuta,
@@ -82,5 +82,10 @@ router.post('/propiedades/crear',protegerRuta,
             body('email').isEmail().withMessage('El email es obligatorio'),
             editarPerfil
         )
+
+        // router.get('/foto-perfil/:id',
+        //     protegerRuta,
+        //     agregarImagenPerfil
+        // )
    
 export default router
