@@ -7,7 +7,7 @@
 > [!IMPORTANT]
 > Para ejecutar el proyecto se necesita un archivo .env con las siguientes propiedades
 > Para la configuracion de la base de datos: DB_NAME=NombreBaseDatos DB_USER=usuario DB_PASS=password DB_HOST=host
-> Para la configuracion de los envios de email de prueba: EMAIL_HOST=  EMAIL_USER=  EMAIL_PORT=  EMAIL_PASS=
+> Para la configuracion de los envios de email de prueba(mailtrap): EMAIL_HOST=  EMAIL_USER=  EMAIL_PORT=  EMAIL_PASS=
 > : BACKEND_URL=
 > Palabra para encriptar : JWT_SECRET=
 > 
