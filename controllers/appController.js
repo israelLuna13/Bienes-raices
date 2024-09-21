@@ -40,11 +40,9 @@ const inicio =async (req,res)=>{
             order:[['createdAt','DESC']]
         })
     ])
-
+    
     let usuarioEnSession
-    if(req.usuario)
-        usuarioEnSession = true
-    usuarioEnSession=false
+    (req.usuario != null ? usuarioEnSession = true: usuarioEnSession = false)
     
     res.render('inicio',{
         pagina:'Inicio',
@@ -60,6 +58,9 @@ const inicio =async (req,res)=>{
 const categoria = async(req,res) =>{
 
     const {id} = req.params
+
+    let usuarioEnSession
+    (req.usuario != null ? usuarioEnSession = true: usuarioEnSession = false)
 
     //comprobar que la categoria exista
      const categoria = await Categoria.findByPk(id)
@@ -80,14 +81,20 @@ const categoria = async(req,res) =>{
     res.render('categoria',{
         pagina:`${categoria.nombre}s en Venta`,
         propiedades,
-        csrfToken:req.csrfToken()
+        csrfToken:req.csrfToken(),
+        usuarioEnSession
     })
 }
 
 const noEncontrado = (req,res)=>{
+    
+    let usuarioEnSession
+    (req.usuario != null ? usuarioEnSession = true: usuarioEnSession = false)
+    
     res.render('404',{
         pagina:'No encontrado',
-        csrfToken:req.csrfToken()
+        csrfToken:req.csrfToken(),
+        usuarioEnSession
     })
 }
 
@@ -95,6 +102,9 @@ const buscador =async (req,res)=>{
 
     //obtenemos el termino de busqueda
     const {termino} = req.body
+    let usuarioEnSession
+    (req.usuario != null ? usuarioEnSession = true: usuarioEnSession = false)
+    
 
     //validar que termino no este vacio
     if(!termino.trim()){
@@ -120,7 +130,8 @@ const buscador =async (req,res)=>{
     res.render('busqueda',{
         pagina:'Resultados de la Busqueda',
         propiedades,
-        csrfToken:req.csrfToken()
+        csrfToken:req.csrfToken(),
+        usuarioEnSession
 
     })
 }

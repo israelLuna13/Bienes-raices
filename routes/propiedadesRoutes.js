@@ -2,7 +2,7 @@ import express from "express"
 import {body} from 'express-validator'
 import protegerRuta from '../middleware/protegerRuta.js'
 import identificarUsuario from "../middleware/identificarUsuario.js"
-import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,cambiarEstado,mostrarPropiedad,enviarMensaje, verMensajes,verPerfil ,editarPerfil,mostrarFormulario} from "../controllers/propiedadController.js"
+import { admin, crear,guardar,agregarImagen,almacenarImagen,editar,guardarCambios,eliminar,cambiarEstado,mostrarPropiedad,enviarMensaje, verMensajes,verPerfil ,editarPerfil,mostrarFormulario,agregarImagenPerfil,guardarImagenPerfil} from "../controllers/propiedadController.js"
 import upload from '../middleware/subirImagen.js'
 const router = express.Router()
 
@@ -83,9 +83,14 @@ router.post('/propiedades/crear',protegerRuta,
             editarPerfil
         )
 
-        // router.get('/foto-perfil/:id',
-        //     protegerRuta,
-        //     agregarImagenPerfil
-        // )
+        router.get('/foto-perfil/:id',
+            protegerRuta,
+            agregarImagenPerfil
+        )
+        router.post('/foto-perfil/:id',
+            protegerRuta,
+            upload.single('imagen'),
+            guardarImagenPerfil
+        )
    
 export default router

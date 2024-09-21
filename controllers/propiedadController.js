@@ -4,11 +4,11 @@ import {
   Categoria,
   Propiedad,
   Mensaje,
-  Usuario,
-} from "../models/index.js";
+  Usuario} from "../models/index.js";
 import { unlink } from "node:fs/promises";
 import { esVendedor, formatearFecha } from "../helpers/index.js";
 import { emailMensaje } from "../helpers/emails.js";
+import { col, fn } from "sequelize";
 const admin = async (req, res) => {
   //leer query string
   const { pagina: paginaActual } = req.query;
@@ -510,14 +510,9 @@ const verPerfil = async (req, res) => {
   {
     return res.redirect("/mis-propiedades");
   }
-
-  const [usuario, propiedades, total] = await Promise.all([
+  const [usuario,total] = await Promise.all([
     //buscamos todas las propiedades
     Usuario.findByPk(id),
-    Propiedad.findAll({
-      //relacionamos Propiedad con categoria , precio y con mensaje
-      include: [{ model: Mensaje, as: "mensajes" }],
-    }),
     //contamos las propiedades que publico el usuario
     Propiedad.count({
       where: {
@@ -525,17 +520,45 @@ const verPerfil = async (req, res) => {
       },
     }),
   ]);
+
+  let totalMensajes = 0
+
+  //si no hay publicaciones 
+  if(total != 0) // contamos los mensajes que tiene el usuario en sus publicaciones
+  {
+     const mensajes =
+     await Propiedad.findAll({
+      where: {
+        usuarioId:id // Filtramos las propiedades por el ID del usuario
+      },
+      include: [
+        {
+          model: Mensaje,
+          as: 'mensajes',
+          attributes: [] // No necesitamos los atributos de los mensajes
+        }
+      ],
+      attributes: [
+        [fn('COUNT',col('mensajes.id')), 'mensajes'] // Contamos los mensajes
+      ],
+      raw: true // Devuelve los datos en formato plano
+    });
+
+    totalMensajes = mensajes[0].mensajes
+  }
+
   if (!usuario) {
     return res.redirect("/mis-propiedades");
   }
   const { nombre, email } = usuario;
-
   return res.render("propiedades/perfil", {
     nombre,
     email,
     id,
-    propiedades,
     total,
+    totalMensajes,
+    csrfToken: req.csrfToken(),
+
   });
 };
 
@@ -608,34 +631,43 @@ const editarPerfil = async (req, res) => {
   }
 };
 
-// const agregarImagenPerfil = async(req,res)=>
-// {
-//    //validar que la propiedad exista
-//   const { id } = req.params;
-//   const propiedad = await Propiedad.findByPk(id);
-//   //si no existe
-//   if (!propiedad) {
-//     return res.redirect("/mis-propiedades");
-//   }
+const agregarImagenPerfil = async(req,res)=>
+{
+   //validar que el usuario exista
+    const { id } = req.params;
+    if(id != req.usuario.id)
+      {
+        return res.redirect("/mis-propiedades");
+      }
 
-//   //validar que la propiedad no este publicada
-//   if (propiedad.publicado) {
-//     return res.redirect("/mis-propiedades");
-//   }
+  res.render("propiedades/imagen-perfil", {
+    pagina: `Agregar imagen: ${req.usuario.nombre}`,
+    csrfToken: req.csrfToken(),
+  //  propiedad,
+  });
+  // return res.render("propiedades/imagen-perfil",{
+  //   csrfToken: req.csrfToken()
+  // })
+}
 
-//   //validar que la propiedad pertenece a quien visita esta pagina
-//   if (req.usuario.id.toString() !== propiedad.usuarioId.toString()) {
-//     return res.redirect("/mis-propiedades");
-//   }
-//   res.render("propiedades/agregar-imagen", {
-//     pagina: `Agregar imagen: ${propiedad.titulo}`,
-//     csrfToken: req.csrfToken(),
-//     propiedad,
-//   });
-//   return res.render("propiedades/imagen-perfil",{
-//     csrfToken: req.csrfToken()
-//   })
-// }
+const guardarImagenPerfil = async (req,res)=>{
+
+
+  // try {
+  //   //multer poen la informacion en file
+  //   //almacenar la imagen y publicar propiedad
+  //   propiedad.imagen = req.file.filename;
+  //   propiedad.publicado = true;
+  //   await propiedad.save(); //guardamos los cambios
+
+  //   //redireccionamos en js desde agregarImagen.js
+
+  //   //redireccionamos al siguiente middleware
+  //   next();
+  // } catch (error) {
+  //   console.log(error);
+  // }
+}
 
 export {
   admin,
@@ -653,5 +685,6 @@ export {
   verPerfil,
   mostrarFormulario,
   editarPerfil,
-  //agregarImagenPerfil
+  agregarImagenPerfil,
+  guardarImagenPerfil
 };
